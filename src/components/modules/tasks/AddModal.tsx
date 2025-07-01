@@ -30,6 +30,8 @@ import {
 } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ChevronDownIcon } from "lucide-react"
+import { useDispatch } from "react-redux"
+import { addTask } from "@/redux/features/task/taskSlice"
 
 type FormData = {
   title: string
@@ -40,6 +42,7 @@ type FormData = {
 
 function AddModal() {
     const [open, setOpen] = React.useState(false)
+    const dispatch =useDispatch()
   const [date, setDate] = React.useState<Date | undefined>(undefined)
   const form = useForm<FormData>({
     defaultValues: {
@@ -52,6 +55,7 @@ function AddModal() {
 
   const onSubmit = (data: FormData) => {
     console.log("Submitted data:", data)
+    dispatch(addTask(data))
   }
 
   return (

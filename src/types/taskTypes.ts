@@ -1,6 +1,6 @@
 export interface ITypes {
   id: string;
-  name: string;
+  title: string;
   description: string;
   dueDate: string;
   isCompleted: boolean;

@@ -1,5 +1,5 @@
 import React from "react"
-import { useForm } from "react-hook-form"
+import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -32,15 +32,23 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ChevronDownIcon } from "lucide-react"
 import { useDispatch } from "react-redux"
 import { addTask } from "@/redux/features/task/taskSlice"
+import type { ITypes } from "@/types/taskTypes"
+import { useAppSelector } from "@/redux/hook"
+import { selectUser } from "@/redux/features/task/userSlice"
 
 type FormData = {
+  id:number
   title: string
   description: string
   dueDate: Date | undefined
   priority: string
+  isCompleted:boolean,
+  assignTo?:string |undefined
 }
 
 function AddModal() {
+  const users =useAppSelector(selectUser)
+  console.log(users,"users")
     const [open, setOpen] = React.useState(false)
     const dispatch =useDispatch()
   const [date, setDate] = React.useState<Date | undefined>(undefined)
@@ -50,12 +58,13 @@ function AddModal() {
       description: "",
       dueDate: new Date(),
       priority: "",
+      assignTo:undefined,
     },
   })
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit:SubmitHandler<FieldValues> = (data) => {
     console.log("Submitted data:", data)
-    dispatch(addTask(data))
+    dispatch(addTask(data as ITypes))
   }
 
   return (
@@ -118,6 +127,34 @@ function AddModal() {
                       <SelectItem value="low">Low</SelectItem>
                       <SelectItem value="medium">Medium</SelectItem>
                       <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+
+
+             <FormField
+              control={form.control}
+              name="assignTo"
+
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Assign To</FormLabel>
+                  <Select  onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl className="w-full">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select User" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                     {
+                      users.map((user) =>{
+                        return  <><SelectItem value={user.id.toString()}>{user.name}</SelectItem></>
+                      })
+                     }
                     </SelectContent>
                   </Select>
                   <FormMessage />
